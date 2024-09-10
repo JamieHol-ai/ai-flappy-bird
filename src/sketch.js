@@ -1,67 +1,77 @@
-let bird;
+let birds = [];
 let pipes = [];
-let score = 0;
-let gameOver = false;
+let neat;
+let generation = 0;
+const POPULATION_SIZE = 200;
 
 function setup() {
     createCanvas(400, 600);
-    bird = new Bird();
-    pipes.push(new Pipe());
+    neat = new Neat(POPULATION_SIZE);
+    resetGame();
 }
 
 function draw() {
     background(200);
 
-    // Game logic
-    if (!gameOver) {
-        if (frameCount % 100 == 0) {
-            pipes.push(new Pipe());
-        }
+    // Update and show pipes
+    for (let i = pipes.length - 1; i >= 0; i--) {
+        pipes[i].update();
+        pipes[i].show();
 
-        for (let i = pipes.length - 1; i >= 0; i--) {
-            pipes[i].update();
-            pipes[i].show();
-
-            if (pipes[i].hits(bird)) {
-                gameOver = true;
-            }
-
-            if (pipes[i].offscreen()) {
-                pipes.splice(i, 1);
-                score++;
-            }
-        }
-
-        bird.update();
-        bird.show();
-
-        if (bird.offscreen()) {
-            gameOver = true;
+        if (pipes[i].offscreen()) {
+            pipes.splice(i, 1);
         }
     }
 
-    // Display score and game over
-    textAlign(CENTER, CENTER);
-    textSize(32);
+    // Add new pipes
+    if (frameCount % 100 == 0) {
+        pipes.push(new Pipe());
+    }
+
+    // Update and show birds
+    for (let bird of birds) {
+        if (bird.alive) {
+            bird.think(pipes);
+            bird.update();
+            bird.show();
+
+            // Check for collisions
+            for (let pipe of pipes) {
+                if (pipe.hits(bird)) {
+                    bird.alive = false;
+                }
+            }
+
+            if (bird.offscreen()) {
+                bird.alive = false;
+            }
+        }
+    }
+
+    // Check if all birds are dead
+    if (birds.every(bird => !bird.alive)) {
+        nextGeneration();
+    }
+
+    // Display info
     fill(0);
-    text(`Score: ${score}`, width/2, 40);
-
-    if (gameOver) {
-        text('Game Over', width / 2, height / 2);
-        text('Press Space to Restart', width / 2, height / 2 + 40);
-    }
+    textSize(24);
+    text(`Generation: ${generation}`, 10, 30);
+    text(`Alive: ${birds.filter(b => b.alive).length}`, 10, 60);
 }
 
-function keyPressed() {
-    if (key == ' ') {
-        if (gameOver) {
-            // Restart game
-            bird = new Bird();
-            pipes = [];
-            score = 0;
-            gameOver = false;
-        } else {
-            bird.jump();
-        }
+function resetGame() {
+    birds = [];
+    pipes = [];
+    frameCount = 0;
+    for (let i = 0; i < POPULATION_SIZE; i++) {
+        birds.push(new Bird(neat.createBrain()));
     }
+    pipes.push(new Pipe());
+}
+
+function nextGeneration() {
+    generation++;
+    neat.evolve(birds);
+    resetGame();
 }
