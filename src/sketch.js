@@ -122,7 +122,7 @@ function trainAI() {
         }
     }
 
-    if (pipesPassed > 10 && !trainedBrain && bestBird !== null) {
+    if (false) {// for saving a new trained AI: pipesPassed > 10 && !trainedBrain && bestBird !== null) {
         trainedBrain = bestBird.brain;
         console.log("AI trained! Score:", pipesPassed);
 
