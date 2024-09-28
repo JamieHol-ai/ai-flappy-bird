@@ -4,14 +4,19 @@ class Bird {
         this.x = 64;
         this.gravity = 0.6;
         this.velocity = 0;
-        this.lift = -15;
+        this.lift = -8;
         this.alive = true;
         this.score = 0;
         this.fitness = 0;
-        this.brain = brain;
+        this.brain = brain || neat.createBrain();
     }
 
     think(pipes) {
+        if (!this.brain || typeof this.brain.activate !== 'function') {
+            console.error('Invalid brain structure');
+            return;
+        }
+
         // Find the closest pipe
         let closestPipe = null;
         let closestDist = Infinity;
@@ -24,16 +29,14 @@ class Bird {
         }
 
         if (closestPipe) {
-            // Create inputs for neural network
             let inputs = [
                 this.y / height,
                 closestPipe.top / height,
-                (closestPipe.bottom + closestPipe.top) / height,
+                (closestPipe.bottom + closestPipe.top) / (2 * height),
                 closestPipe.x / width,
                 this.velocity / 10
             ];
 
-            // Get output from neural network
             let output = this.brain.activate(inputs);
             if (output[0] > 0.5) {
                 this.jump();
@@ -42,13 +45,12 @@ class Bird {
     }
 
     jump() {
-        this.velocity += this.lift;
+        this.velocity = this.lift;
     }
 
     update() {
         this.velocity += this.gravity;
         this.y += this.velocity;
-        this.score++;
 
         if (this.y > height) {
             this.y = height;
@@ -58,6 +60,7 @@ class Bird {
             this.y = 0;
             this.velocity = 0;
         }
+        this.score++;
     }
 
     show() {

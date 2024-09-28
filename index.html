@@ -4,21 +4,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Flappy Bird</title>
+    <title>Flappy Bird AI</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
     <style>
         body {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
         }
+
+        #menu {
+            margin-bottom: 20px;
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px;
+        }
     </style>
 </head>
 
 <body>
+    <h1 style="color: red;">Project Under Development</h1>
+    <div id="menu">
+        <button onclick="setMode('play')">Play Game</button>
+        <button onclick="setMode('trainAI')">Train AI</button>
+        <button onclick="setMode('showUntrained')">Show Untrained AI</button>
+        <button onclick="setMode('showTrained')">Show Trained AI</button>
+    </div>
+    <div id="gameCanvas"></div>
     <script src="src/bird.js"></script>
     <script src="src/pipe.js"></script>
     <script src="src/neat.js"></script>
