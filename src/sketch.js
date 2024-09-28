@@ -234,6 +234,8 @@ function setMode(mode) {
     }
 }
 
+window.setMode = setMode;
+
 function extractWeights(loadedBrain) {
     // Check if loadedBrain is directly the weights array
     if (Array.isArray(loadedBrain) && loadedBrain.length === 2) {
